@@ -34,6 +34,7 @@ public abstract class AbstractBox extends HashMap<String, Object> implements Box
 	public static final String META_DATA_KEY = "metadata";
 	public static final String CONTENT_KEY = "content";
 
+	
 	protected String id;
 	protected Map<String, List<Box>> childBoxesByContainer = new HashMap<>();
 	{
