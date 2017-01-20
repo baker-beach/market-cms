@@ -1,6 +1,7 @@
 package com.bakerbeach.market.cms.service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,8 @@ public class UrlServiceImpl implements UrlService {
 
 	private UrlMappingDao urlMappingDao;
 	private Map<String, Pattern> urlWildcardPatterns;
+
+	private Map<String, UrlMappingInfo> urlMappingCache = new HashMap<>();
 
 	public UrlMappingDao getUrlMappingDao() {
 		return urlMappingDao;
@@ -53,24 +56,65 @@ public class UrlServiceImpl implements UrlService {
 
 	@Override
 	public UrlMappingInfo getRequestMapping(String url, Map<String, String[]> parameterMap, CmsContext cmsContext) {
-		String searchUrl = url;
+		String shopId = cmsContext.getAppCode();
+		String language = cmsContext.getCurrentLocale().getLanguage();
 
-		UrlMappingInfo urlMappingInfo = urlMappingDao.getRequestMappingByUrl(searchUrl, cmsContext.getAppCode(),
-				cmsContext.getCurrentLocale().getLanguage());
+		UrlMappingInfo mapping = getMapping(url, shopId, language);
 
-		if (urlMappingInfo == null && urlWildcardPatterns
+		if (mapping == null && urlWildcardPatterns
 				.containsKey(cmsContext.getAppCode() + cmsContext.getCurrentLocale().getLanguage())) {
-			Matcher matcher = urlWildcardPatterns.get(cmsContext.getAppCode() + cmsContext.getCurrentLocale().getLanguage()).matcher(url);
+			Matcher matcher = urlWildcardPatterns
+					.get(cmsContext.getAppCode() + cmsContext.getCurrentLocale().getLanguage()).matcher(url);
 			if (matcher.find()) {
-				searchUrl = matcher.group();
-				urlMappingInfo = urlMappingDao.getRequestMappingByUrl(searchUrl, cmsContext.getAppCode(),
-						cmsContext.getCurrentLocale().getLanguage());
+				mapping = getMapping(matcher.group(), shopId, language);
 			}
 		}
 
-		return urlMappingInfo;
-
+		return mapping;
 	}
+
+	private UrlMappingInfo getMapping(String url, String shopId, String language) {
+		String key = new StringBuilder(url).append(":").append(shopId).append(":").append(language).toString();
+
+		UrlMappingInfo mapping = urlMappingCache.get(key);
+		if (mapping != null) {
+			if (mapping.getLastUpdate().getTime() > (new Date()).getTime() - 6000000) {
+				return mapping;
+			}
+		}
+
+		mapping = urlMappingDao.getRequestMappingByUrl(url, shopId, language);
+		urlMappingCache.put(key, mapping);
+
+		return mapping;
+	}
+	
+	@Override
+	public void clearCache() {
+		urlMappingCache.clear();
+	}
+
+	/*
+	 * @Override public UrlMappingInfo getRequestMapping(String url, Map<String,
+	 * String[]> parameterMap, CmsContext cmsContext) { String searchUrl = url;
+	 * 
+	 * UrlMappingInfo urlMappingInfo =
+	 * urlMappingDao.getRequestMappingByUrl(searchUrl, cmsContext.getAppCode(),
+	 * cmsContext.getCurrentLocale().getLanguage());
+	 * 
+	 * if (urlMappingInfo == null && urlWildcardPatterns
+	 * .containsKey(cmsContext.getAppCode() +
+	 * cmsContext.getCurrentLocale().getLanguage())) { Matcher matcher =
+	 * urlWildcardPatterns.get(cmsContext.getAppCode() +
+	 * cmsContext.getCurrentLocale().getLanguage()).matcher(url); if
+	 * (matcher.find()) { searchUrl = matcher.group(); urlMappingInfo =
+	 * urlMappingDao.getRequestMappingByUrl(searchUrl, cmsContext.getAppCode(),
+	 * cmsContext.getCurrentLocale().getLanguage()); } }
+	 * 
+	 * return urlMappingInfo;
+	 * 
+	 * }
+	 */
 
 	@Override
 	public List<UrlMappingInfo> getFilterUrls() {

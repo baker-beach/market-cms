@@ -14,4 +14,6 @@ public interface UrlService {
 
 	List<UrlMappingInfo> getFilterUrls();
 
+	void clearCache();
+
 }
