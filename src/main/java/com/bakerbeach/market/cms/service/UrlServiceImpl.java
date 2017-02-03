@@ -8,16 +8,20 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.springframework.beans.factory.annotation.Value;
+
 import com.bakerbeach.market.cms.model.CmsContext;
 import com.bakerbeach.market.cms.model.UrlMappingInfo;
 
 public class UrlServiceImpl implements UrlService {
-
 	private UrlMappingDao urlMappingDao;
 	private Map<String, Pattern> urlWildcardPatterns;
 
 	private Map<String, UrlMappingInfo> urlMappingCache = new HashMap<>();
 
+	@Value("${url.cache.time:6000000}")
+	private Integer cacheTime;
+	
 	public UrlMappingDao getUrlMappingDao() {
 		return urlMappingDao;
 	}
@@ -78,7 +82,7 @@ public class UrlServiceImpl implements UrlService {
 
 		UrlMappingInfo mapping = urlMappingCache.get(key);
 		if (mapping != null) {
-			if (mapping.getLastUpdate().getTime() > (new Date()).getTime() - 6000000) {
+			if (mapping.getLastUpdate().getTime() > (new Date()).getTime() - cacheTime) {
 				return mapping;
 			}
 		}
@@ -93,29 +97,7 @@ public class UrlServiceImpl implements UrlService {
 	public void clearCache() {
 		urlMappingCache.clear();
 	}
-
-	/*
-	 * @Override public UrlMappingInfo getRequestMapping(String url, Map<String,
-	 * String[]> parameterMap, CmsContext cmsContext) { String searchUrl = url;
-	 * 
-	 * UrlMappingInfo urlMappingInfo =
-	 * urlMappingDao.getRequestMappingByUrl(searchUrl, cmsContext.getAppCode(),
-	 * cmsContext.getCurrentLocale().getLanguage());
-	 * 
-	 * if (urlMappingInfo == null && urlWildcardPatterns
-	 * .containsKey(cmsContext.getAppCode() +
-	 * cmsContext.getCurrentLocale().getLanguage())) { Matcher matcher =
-	 * urlWildcardPatterns.get(cmsContext.getAppCode() +
-	 * cmsContext.getCurrentLocale().getLanguage()).matcher(url); if
-	 * (matcher.find()) { searchUrl = matcher.group(); urlMappingInfo =
-	 * urlMappingDao.getRequestMappingByUrl(searchUrl, cmsContext.getAppCode(),
-	 * cmsContext.getCurrentLocale().getLanguage()); } }
-	 * 
-	 * return urlMappingInfo;
-	 * 
-	 * }
-	 */
-
+	
 	@Override
 	public List<UrlMappingInfo> getFilterUrls() {
 		return urlMappingDao.geFilterUrls();

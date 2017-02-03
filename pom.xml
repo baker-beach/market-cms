@@ -10,7 +10,7 @@
 	<artifactId>market-cms</artifactId>
 	<name>cms</name>
 	<packaging>jar</packaging>
-	<version>1.0.7-SNAPSHOT</version>
+	<version>1.0.8</version>
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -50,7 +50,7 @@
 		<dependency>
 			<groupId>com.bakerbeach.market</groupId>
 			<artifactId>market-translation-api</artifactId>
-			<version>[1.0.0,)</version>
+			<version>[1.0.0,1.1.0)</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>

@@ -10,4 +10,6 @@ public interface PageService {
 
 	Box getBoxByType(String boxType) throws PageServiceException;
 
+	void clearCache();
+
 }
