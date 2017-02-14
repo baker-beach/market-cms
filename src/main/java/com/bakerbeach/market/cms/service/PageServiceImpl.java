@@ -74,7 +74,7 @@ public class PageServiceImpl implements PageService, ApplicationContextAware {
 			if (structure.containsKey("content_id")) {
 				box.setContentId((String) structure.get("content_id"));
 				Content content = getContent((String) structure.get("content_id"));
-				if (content != null) {
+				if (content != null && content.get() != null) {
 					box.getData().putAll(content.get());					
 				}
 			}

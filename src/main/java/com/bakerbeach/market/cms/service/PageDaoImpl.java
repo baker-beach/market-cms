@@ -55,7 +55,7 @@ public class PageDaoImpl implements PageDao {
 				return new Content(dbo.toMap());
 			} else {
 				log.error("content with ID" + contentId + " not founf");
-				return null;
+				return new Content(null);
 			}
 		} catch (Exception e) {
 			throw new CmsDaoException("error while loading content with ID " + contentId);
