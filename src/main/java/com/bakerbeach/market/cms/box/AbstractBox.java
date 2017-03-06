@@ -27,7 +27,7 @@ import com.bakerbeach.market.core.api.model.Messages;
 @SuppressWarnings("serial")
 public abstract class AbstractBox extends HashMap<String, Object> implements Box {
 	protected static Logger log = LoggerFactory.getLogger(Class.class.getName());
-	
+
 	public static final String TYPE_KEY = "type";
 	public static final String TEMPLATE_KEY = "template";
 	public static final String DATA_KEY = "data";
@@ -114,7 +114,6 @@ public abstract class AbstractBox extends HashMap<String, Object> implements Box
 	}
 
 	protected BindingResult bind(Object bindingObject, HttpServletRequest request) {
-
 		ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 		Validator validator = factory.getValidator();
 		ServletRequestDataBinder servletRequestDataBinder = new ServletRequestDataBinder(bindingObject);
@@ -124,11 +123,10 @@ public abstract class AbstractBox extends HashMap<String, Object> implements Box
 		BindingResult result = servletRequestDataBinder.getBindingResult();
 		return result;
 	}
-	
+
 	@Override
 	public void setContentId(String contentId) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -136,13 +134,14 @@ public abstract class AbstractBox extends HashMap<String, Object> implements Box
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	public void getFieldErrors(BindingResult result, Messages messages) {
 		for (ObjectError tempError : result.getAllErrors()) {
 			if (tempError instanceof FieldError) {
 				String name = ((FieldError) tempError).getField();
 				if (messages.getFieldError(name) == null) {
-					messages.addFieldError(new FieldMessageImpl(name, Message.TYPE_ERROR, tempError.getDefaultMessage()));
+					messages.addFieldError(new FieldMessageImpl(name, Message.TYPE_ERROR, tempError.getDefaultMessage(),
+							tempError.getArguments()));
 				}
 			}
 		}
