@@ -19,6 +19,7 @@ public class UrlMappingInfo extends HashMap<String, Object> {
 	
 	public UrlMappingInfo() {
 		put(LAST_UPDATE_KEY, new Date());
+		put(URLS_KEY, new ArrayList<Map<String, String>>());
 	}
 
 	@SuppressWarnings("unchecked")

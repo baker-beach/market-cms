@@ -94,6 +94,11 @@ public class UrlServiceImpl implements UrlService {
 	}
 	
 	@Override
+	public void save(UrlMappingInfo urlMappingInfo) {
+		urlMappingDao.save(urlMappingInfo);
+	}
+	
+	@Override
 	public void clearCache() {
 		urlMappingCache.clear();
 	}

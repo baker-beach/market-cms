@@ -8,6 +8,7 @@ import java.util.Map;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
 import com.bakerbeach.market.cms.model.UrlMappingInfo;
+import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
@@ -119,7 +120,11 @@ public class UrlMappingDaoImpl implements UrlMappingDao {
 		return result;
 	}
 	
-
+	public void save(UrlMappingInfo urlMapping) {
+		DBObject dbo = encodeRequestMapping(urlMapping);
+		getRequestMappingCollection().save(dbo);
+	}
+	
 	public static UrlMappingInfo decodeRequestMapping(Map<String, Object> map) {
 		if (map != null) {
 			UrlMappingInfo requestMapping = new UrlMappingInfo();
@@ -127,6 +132,11 @@ public class UrlMappingDaoImpl implements UrlMappingDao {
 			return requestMapping;
 		}
 		return null;
+	}
+	
+	public static DBObject encodeRequestMapping(UrlMappingInfo urlMapping) {
+		BasicDBObjectBuilder objectBuilder = BasicDBObjectBuilder.start(urlMapping);		
+		return objectBuilder.get();
 	}
 
 	protected DBCollection getRequestMappingCollection() {

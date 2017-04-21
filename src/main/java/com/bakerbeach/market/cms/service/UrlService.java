@@ -7,7 +7,7 @@ import com.bakerbeach.market.cms.model.CmsContext;
 import com.bakerbeach.market.cms.model.UrlMappingInfo;
 
 public interface UrlService {
-	
+
 	String getPageUrl(String pageId, String shopId, String language);
 
 	UrlMappingInfo getRequestMapping(String url, Map<String, String[]> parameterMap, CmsContext cmsContext);
@@ -15,5 +15,7 @@ public interface UrlService {
 	List<UrlMappingInfo> getFilterUrls();
 
 	void clearCache();
+
+	void save(UrlMappingInfo urlMappingInfo);
 
 }

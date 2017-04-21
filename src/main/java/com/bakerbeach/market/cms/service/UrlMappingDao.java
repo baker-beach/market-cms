@@ -15,5 +15,7 @@ public interface UrlMappingDao {
 	UrlMappingInfo getRequestMappingByUrl(String url, String shopId, String language);
 	
 	List<UrlMappingInfo> geFilterUrls();
+	
+	void save(UrlMappingInfo urlMapping);
 
 }
