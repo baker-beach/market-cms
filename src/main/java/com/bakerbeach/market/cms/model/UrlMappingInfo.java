@@ -20,6 +20,7 @@ public class UrlMappingInfo extends HashMap<String, Object> {
 	public UrlMappingInfo() {
 		put(LAST_UPDATE_KEY, new Date());
 		put(URLS_KEY, new ArrayList<Map<String, String>>());
+		put(DATA_KEY, new HashMap<String, Object>());
 	}
 
 	@SuppressWarnings("unchecked")

@@ -8,6 +8,7 @@ import java.util.Map;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
 import com.bakerbeach.market.cms.model.UrlMappingInfo;
+import com.mongodb.BasicDBObject;
 import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
@@ -122,7 +123,12 @@ public class UrlMappingDaoImpl implements UrlMappingDao {
 	
 	public void save(UrlMappingInfo urlMapping) {
 		DBObject dbo = encodeRequestMapping(urlMapping);
-		getRequestMappingCollection().save(dbo);
+		
+		QueryBuilder qb = new QueryBuilder();
+		qb.and("url_id").is(urlMapping.getUrlId());
+
+		getRequestMappingCollection().findAndModify(qb.get(), null, null, false, new BasicDBObject("$set", dbo), false, true);
+//		getRequestMappingCollection().save(dbo);
 	}
 	
 	public static UrlMappingInfo decodeRequestMapping(Map<String, Object> map) {
