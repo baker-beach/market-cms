@@ -48,10 +48,17 @@ public class PageController implements ApplicationContextAware{
 		cmsContext.setHttpServletResponse(response);
 		cmsContext.setModelMap(map);
 		
+		if(map.get("messages") == null && request.getSession().getAttribute("messages") != null){
+			Messages messages = (Messages)request.getSession().getAttribute("messages");
+			map.put("messages", messages);
+		}
+		
 		if(map.get("messages") == null){
 			Messages messages = new MessagesImpl();
 			map.put("messages", messages);
 		}
+		
+
 		
 		map.put("cmsCtx", cmsContext);
 		
