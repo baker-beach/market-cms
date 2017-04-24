@@ -51,6 +51,7 @@ public class PageController implements ApplicationContextAware{
 		if(map.get("messages") == null && request.getSession().getAttribute("messages") != null){
 			Messages messages = (Messages)request.getSession().getAttribute("messages");
 			map.put("messages", messages);
+			request.getSession().setAttribute("messages",null);
 		}
 		
 		if(map.get("messages") == null){
