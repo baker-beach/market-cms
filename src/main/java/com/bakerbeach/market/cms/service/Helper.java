@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Map;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -22,15 +23,15 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.bakerbeach.market.translation.api.service.TranslationService;
 
-public class Helper{
+public class Helper {
 	protected static final Logger LOG = LoggerFactory.getLogger(Helper.class.getName());
-	
+
 	@Autowired
 	protected UrlService urlService;
-	
+
 	@Autowired
 	protected VelocityEngine velocityEngine;
-	
+
 	@Autowired
 	protected TranslationService translationService;
 
@@ -56,7 +57,7 @@ public class Helper{
 		path.append(key);
 		return path.toString();
 	}
-	
+
 	public String t(String code) {
 		if (code != null) {
 			return t("text", "default", code, code, CmsContextHolder.getInstance().getCurrentLocale());
@@ -80,20 +81,20 @@ public class Helper{
 			return null;
 		}
 	}
-	
+
 	public String t(String type, String tag, String code, Object... args) {
 		if (code != null) {
-			return t(type, tag, code, code, CmsContextHolder.getInstance().getCurrentLocale(), args);		
+			return t(type, tag, code, code, CmsContextHolder.getInstance().getCurrentLocale(), args);
 		} else {
 			return null;
 		}
 	}
-	
+
 	public String t(String type, String tag, String code, String def, Locale locale, Object... args) {
-		try{
+		try {
 			String msg = translationService.getMessage(tag, type, code, args, def, locale);
 			return render(msg);
-		} catch (Exception e){
+		} catch (Exception e) {
 			LOG.error(e.getMessage());
 			return "";
 		}
@@ -120,21 +121,20 @@ public class Helper{
 			return "";
 		}
 	}
-	
+
 	public String pageUrl(String pageId) {
 		String uri = urlService.getPageUrl(pageId, CmsContextHolder.getInstance().getAppCode(), CmsContextHolder.getInstance().getCurrentLocale().getLanguage());
-		if(uri == null)
+		if (uri == null)
 			uri = "/";
 		return url(uri);
 	}
 
 	public String pageUri(String pageId) {
 		String uri = urlService.getPageUrl(pageId, CmsContextHolder.getInstance().getAppCode(), CmsContextHolder.getInstance().getCurrentLocale().getLanguage());
-		if(uri == null)
+		if (uri == null)
 			uri = "/";
 		return uri;
 	}
-
 
 	public static String b64(String in) {
 		return Base64.encodeBase64URLSafeString(in.getBytes());
@@ -144,8 +144,6 @@ public class Helper{
 		String encodedUrl = CmsContextHolder.getInstance().getHttpServletResponse().encodeURL(key);
 		return new StringBuilder(CmsContextHolder.getInstance().getHttpServletRequest().getContextPath()).append(encodedUrl).toString();
 	}
-
-
 
 	private static String url(String protocol, String host, Integer port, String key) {
 		if (port == 80 || port == 443) {
@@ -187,6 +185,18 @@ public class Helper{
 			e.printStackTrace();
 		}
 		return text;
+	}
+
+	public String t(String tag, String code, Map<String, Object> args) {
+		try {
+			String text = t(tag,code);
+			StringWriter stringWriter = new StringWriter();
+			velocityEngine.evaluate(new VelocityContext(args), stringWriter, "post_message_rendere", new StringReader(text));
+			return stringWriter.toString();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return code;
 	}
 
 }
