@@ -189,7 +189,7 @@ public class Helper {
 
 	public String t(String tag, String code, Map<String, Object> args) {
 		try {
-			String text = t(tag,code);
+			String text = translationService.getMessage(tag, "text", code, null, code, CmsContextHolder.getInstance().getCurrentLocale());
 			StringWriter stringWriter = new StringWriter();
 			velocityEngine.evaluate(new VelocityContext(args), stringWriter, "post_message_rendere", new StringReader(text));
 			return stringWriter.toString();
