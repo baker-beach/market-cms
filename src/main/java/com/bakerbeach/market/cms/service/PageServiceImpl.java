@@ -169,7 +169,7 @@ public class PageServiceImpl implements PageService, ApplicationContextAware {
 				if(boxDescription.get("data") != null)
 					box.getData().putAll((Map) CopyHelper.copy((Map<String,Object>)boxDescription.get("data")));
 				if(boxDescription.get("template") != null)
-					box.getData().put("template", boxDescription.get("template"));
+					box.setTemplate((String)boxDescription.get("template"));
 			}
 		}
 		return box;
