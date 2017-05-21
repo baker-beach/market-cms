@@ -59,13 +59,23 @@ public class UrlRewriterImpl implements UrlRewriter {
 			} else if (mapping.getAction().equals("redirect")) {
 				Map<String, Object> data = mapping.getData();
 
-				String location = (String) data.get("location");
+				String location = "/";
+				if (data.containsKey("location_id")) {
+					String locationId = (String) data.get("location_id");
+					String shopId = cmsCtx.getAppCode();
+					String language = cmsCtx.getCurrentLocale().getLanguage();
+					
+					location = urlService.getPageUrl(locationId, cmsCtx.getAppCode(), language);					
+				} else if (data.containsKey("location")) {
+					location = (String) data.get("location");
+				}
+				
 				location = new StringBuilder(request.getContextPath()).append(location).toString();
-
+				
 				response.setStatus((Integer) data.get("status"));
 				response.setHeader("Location", location);
 				response.setHeader("Connection", "close");
-
+				
 				return true;
 			} else if (mapping.getAction().equals("handle")) {
 				CmsContextHolder.getInstance().refine(mapping);
