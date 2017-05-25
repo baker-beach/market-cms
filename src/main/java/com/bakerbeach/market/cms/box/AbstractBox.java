@@ -57,11 +57,11 @@ public abstract class AbstractBox extends HashMap<String, Object> implements Box
 	}
 
 	public String getTemplate() {
-		return (String) get(TEMPLATE_KEY);
+		return (String) getData().get(TEMPLATE_KEY);
 	}
 
 	public void setTemplate(String template) {
-		put(TEMPLATE_KEY, template);
+		getData().put(TEMPLATE_KEY, template);
 	}
 
 	@SuppressWarnings("unchecked")
