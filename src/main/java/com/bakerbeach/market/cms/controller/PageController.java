@@ -29,8 +29,8 @@ import com.bakerbeach.market.cms.service.CmsContextHolder;
 import com.bakerbeach.market.cms.service.Helper;
 import com.bakerbeach.market.cms.service.PageService;
 import com.bakerbeach.market.cms.service.PageServiceException.PageNotFoundException;
+import com.bakerbeach.market.commons.Messages;
 import com.bakerbeach.market.commons.MessagesImpl;
-import com.bakerbeach.market.core.api.model.Messages;
 
 @Controller
 public class PageController implements ApplicationContextAware{

@@ -21,8 +21,8 @@ import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
 import org.springframework.web.bind.ServletRequestDataBinder;
 
 import com.bakerbeach.market.commons.FieldMessageImpl;
-import com.bakerbeach.market.core.api.model.Message;
-import com.bakerbeach.market.core.api.model.Messages;
+import com.bakerbeach.market.commons.Message;
+import com.bakerbeach.market.commons.Messages;
 
 @SuppressWarnings("serial")
 public abstract class AbstractBox extends HashMap<String, Object> implements Box {
