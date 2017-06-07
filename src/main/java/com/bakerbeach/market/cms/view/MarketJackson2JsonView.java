@@ -14,8 +14,6 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.web.servlet.view.json.AbstractJackson2View;
 
 import com.bakerbeach.market.cms.box.Box;
-import com.bakerbeach.market.cms.view.MarketJackson2JsonView.FieldMessageView;
-import com.bakerbeach.market.cms.view.MarketJackson2JsonView.MessageView;
 import com.bakerbeach.market.commons.FieldMessage;
 import com.bakerbeach.market.commons.Message;
 import com.bakerbeach.market.commons.Messages;
@@ -56,7 +54,7 @@ public class MarketJackson2JsonView extends AbstractJackson2View {
 			result = getData(rootBox);
 		}
 
-		MessagesView messages = new MessagesView((Messages) request.getSession().getAttribute("messages"));
+		MessagesView messages = new MessagesView((Messages) model.get("messages"));
 		result.put("messages", messages);
 
 		return result;
