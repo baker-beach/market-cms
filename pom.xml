@@ -10,7 +10,7 @@
 	<artifactId>market-cms</artifactId>
 	<name>cms</name>
 	<packaging>jar</packaging>
-	<version>3.0.0</version>
+	<version>3.0.1</version>
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework</groupId>

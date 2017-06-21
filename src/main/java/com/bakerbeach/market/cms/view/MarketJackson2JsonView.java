@@ -14,6 +14,7 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.web.servlet.view.json.AbstractJackson2View;
 
 import com.bakerbeach.market.cms.box.Box;
+import com.bakerbeach.market.cms.service.Helper;
 import com.bakerbeach.market.commons.FieldMessage;
 import com.bakerbeach.market.commons.Message;
 import com.bakerbeach.market.commons.Messages;
@@ -54,7 +55,8 @@ public class MarketJackson2JsonView extends AbstractJackson2View {
 			result = getData(rootBox);
 		}
 
-		MessagesView messages = new MessagesView((Messages) model.get("messages"));
+		
+		MessagesView messages = new MessagesView((Helper) model.get("helper"), (Messages) model.get("messages"));
 		result.put("messages", messages);
 
 		return result;
@@ -94,13 +96,13 @@ public class MarketJackson2JsonView extends AbstractJackson2View {
 		List<MessageView> globalMessages = new ArrayList<>();
 		List<MessageView> fieldMessages = new ArrayList<>();
 
-		public MessagesView(Messages messages) {
+		public MessagesView(Helper helper, Messages messages) {
 			if (messages != null) {
 				messages.getGlobalMessages().forEach(m -> {
-					globalMessages.add(new MessageView(m));				
+					globalMessages.add(new MessageView(helper, m));				
 				});
 				messages.getFieldMessages().forEach(m -> {
-					fieldMessages.add(new FieldMessageView(m));
+					fieldMessages.add(new FieldMessageView(helper, m));
 				});
 			}
 		}
@@ -112,9 +114,11 @@ public class MarketJackson2JsonView extends AbstractJackson2View {
 
 	public static class MessageView {
 		protected Message message;
+		protected String translation;
 
-		public MessageView(Message message) {
+		public MessageView(Helper helper, Message message) {
 			this.message = message;
+			this.translation = helper.t("message", message.getCode(), message.getArgs());
 		}
 
 		public Object[] getArgs() {
@@ -128,13 +132,17 @@ public class MarketJackson2JsonView extends AbstractJackson2View {
 		public String getType() {
 			return message.getType();
 		}
+		
+		public String getTranslation() {
+			return translation;
+		}
 
 	}
 
 	public static class FieldMessageView extends MessageView {
 
-		public FieldMessageView(FieldMessage message) {
-			super(message);
+		public FieldMessageView(Helper helper, FieldMessage message) {
+			super(helper, message);
 		}
 
 		public String getName() {
