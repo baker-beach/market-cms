@@ -57,6 +57,8 @@ public abstract class AbstractBox extends HashMap<String, Object> implements Box
 	}
 
 	public String getTemplate() {
+		if (getData().containsKey(TEMPLATE_KEY))
+			return (String) getData().get(TEMPLATE_KEY);
 		return (String) get(TEMPLATE_KEY);
 	}
 
