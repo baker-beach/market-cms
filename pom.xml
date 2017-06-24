@@ -10,7 +10,7 @@
 	<artifactId>market-cms</artifactId>
 	<name>cms</name>
 	<packaging>jar</packaging>
-	<version>1.0.16</version>
+	<version>1.0.16-redirect-patch</version>
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework</groupId>
