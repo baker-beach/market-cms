@@ -102,7 +102,7 @@ public class PageController implements ApplicationContextAware{
 			doRenderRequest(page.getRootBox(), request, response, map);
 			return page.getRootBox().getTemplate();
 		}catch (Exception e) {
-			log.error(ExceptionUtils.getStackTrace(e));
+			log.error(ExceptionUtils.getMessage(e));
 			map.clear();
 			return "redirect:" + helper.pageUrl("exception");
 		}
