@@ -10,6 +10,7 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.web.servlet.view.json.AbstractJackson2View;
 
@@ -55,7 +56,6 @@ public class MarketJackson2JsonView extends AbstractJackson2View {
 			result = getData(rootBox);
 		}
 
-		
 		MessagesView messages = new MessagesView((Helper) model.get("helper"), (Messages) model.get("messages"));
 		result.put("messages", messages);
 
@@ -99,7 +99,11 @@ public class MarketJackson2JsonView extends AbstractJackson2View {
 		public MessagesView(Helper helper, Messages messages) {
 			if (messages != null) {
 				messages.getGlobalMessages().forEach(m -> {
-					globalMessages.add(new MessageView(helper, m));				
+					// TODO: remove that workaround and show all global messages
+					// as soon they can be handled in frontend
+					if (m.getTags() != null && m.getTags().contains(Message.TAG_BOX)) {
+						globalMessages.add(new MessageView(helper, m));
+					}
 				});
 				messages.getFieldMessages().forEach(m -> {
 					fieldMessages.add(new FieldMessageView(helper, m));
@@ -132,7 +136,7 @@ public class MarketJackson2JsonView extends AbstractJackson2View {
 		public String getType() {
 			return message.getType();
 		}
-		
+
 		public String getTranslation() {
 			return translation;
 		}
@@ -148,10 +152,10 @@ public class MarketJackson2JsonView extends AbstractJackson2View {
 		public String getName() {
 			return ((FieldMessage) message).getName();
 		}
-		
+
 		public Object getRejectedValue() {
 			return ((FieldMessage) message).getRejectedValue();
 		}
-		
+
 	}
 }
