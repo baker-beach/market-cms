@@ -12,14 +12,14 @@ public class CmsContextHolder {
 	public static CmsContext getInstance() {
 		RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
 		CmsContext cmsCtx = (CmsContext) requestAttributes.getAttribute(CMS_CONTEXT_REQUEST_ATTRIBUTES_KEY,
-				RequestAttributes.SCOPE_SESSION);
+				RequestAttributes.SCOPE_REQUEST);
 
 		return cmsCtx;
 	}
 
 	public static void setInstance(CmsContext cmsCtx) {
 		RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
-		requestAttributes.setAttribute(CMS_CONTEXT_REQUEST_ATTRIBUTES_KEY, cmsCtx, RequestAttributes.SCOPE_SESSION);
+		requestAttributes.setAttribute(CMS_CONTEXT_REQUEST_ATTRIBUTES_KEY, cmsCtx, RequestAttributes.SCOPE_REQUEST);
 	}
 
 }

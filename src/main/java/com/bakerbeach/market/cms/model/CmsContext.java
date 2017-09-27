@@ -8,19 +8,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.ui.ModelMap;
 
+@SuppressWarnings("unused")
 public interface CmsContext {
-	
-	HttpServletRequest getHttpServletRequest();
-	
-	HttpServletResponse getHttpServletResponse();
-	
-	void setHttpServletRequest(HttpServletRequest httpServletRequest);
-	
-	void setHttpServletResponse(HttpServletResponse httpServletResponse);
-	
-	ModelMap getModelMap();
-	
-	void setModelMap(ModelMap modelMap);
 	
 	String getAppCode();
 	
@@ -45,17 +34,19 @@ public interface CmsContext {
 	Integer getPort();
 	
 	Integer getSecurePort();
-	
-	Map<String, Object> getData();
 
-	Map<String, Object> getRequestData();
-
-	Map<String, Object> getSessionData();
-
-	CmsContext refine(UrlMappingInfo urlMappingInfo);
-	
 	String getHelperClass();
 	
 	String getDefaultPageId();
+	
+	HttpServletRequest getHttpServletRequest();
+	
+	HttpServletResponse getHttpServletResponse();
+	
+	ModelMap getModelMap();
+	
+	CmsContext refine(UrlMappingInfo urlMappingInfo);
+
+	Map<String, Object> getRequestData();
 
 }

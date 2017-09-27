@@ -44,9 +44,7 @@ public class PageController implements ApplicationContextAware{
 	public String getPage(ModelMap map, HttpServletRequest request, HttpServletResponse response, RedirectAttributes redirectAttrs) {
 
 		CmsContext cmsContext = CmsContextHolder.getInstance();
-		cmsContext.setHttpServletRequest(request);
-		cmsContext.setHttpServletResponse(response);
-		cmsContext.setModelMap(map);
+		map.put("cmsCtx", cmsContext);
 		
 		if(map.get("messages") == null && request.getSession().getAttribute("messages") != null){
 			Messages messages = (Messages)request.getSession().getAttribute("messages");
@@ -58,24 +56,18 @@ public class PageController implements ApplicationContextAware{
 			Messages messages = new MessagesImpl();
 			map.put("messages", messages);
 		}
-		
-
-		
-		map.put("cmsCtx", cmsContext);
-		
+				
 		Helper helper = null;
 	
 		try {
-			helper = (Helper) context.getBean(Class.forName(cmsContext.getHelperClass()));
+			helper = (Helper) context.getBean(Class.forName(cmsContext.getHelperClass()), cmsContext);
 		} catch (BeansException | ClassNotFoundException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 
 		map.put("helper",helper);
-		
-
-		
+			
 		try {
 			Page page = null;
 			try{

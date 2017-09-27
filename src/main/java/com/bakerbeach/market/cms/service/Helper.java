@@ -18,11 +18,13 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
-
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+import com.bakerbeach.market.cms.model.CmsContext;
 import com.bakerbeach.market.translation.api.service.TranslationService;
 
+@Component
+@Scope("prototype")
 public class Helper {
 	protected static final Logger LOG = LoggerFactory.getLogger(Helper.class.getName());
 
@@ -34,12 +36,18 @@ public class Helper {
 
 	@Autowired
 	protected TranslationService translationService;
-
-	public static String out(String in) {
+	
+	protected CmsContext context;
+	
+	public Helper(CmsContext context) {
+		this.context = context; 
+	}
+	
+	public String out(String in) {
 		return StringEscapeUtils.escapeHtml(in);
 	}
 
-	public static String json(Object in) {
+	public String json(Object in) {
 		try {
 			StringWriter writer = new StringWriter();
 			ObjectMapper mapper = new ObjectMapper();
@@ -51,8 +59,8 @@ public class Helper {
 		}
 	}
 
-	public static String resourceUrl(String key) {
-		StringBuilder path = new StringBuilder(CmsContextHolder.getInstance().getHttpServletRequest().getContextPath());
+	public String resourceUrl(String key) {
+		StringBuilder path = new StringBuilder(context.getHttpServletRequest().getContextPath());
 		path.append("/resources");
 		path.append(key);
 		return path.toString();
@@ -60,7 +68,7 @@ public class Helper {
 
 	public String t(String code) {
 		if (code != null) {
-			return t("text", "default", code, code, CmsContextHolder.getInstance().getCurrentLocale());
+			return t("text", "default", code, code, context.getCurrentLocale());
 		} else {
 			return null;
 		}
@@ -68,7 +76,7 @@ public class Helper {
 
 	public String t(String tag, String code, Object... args) {
 		if (code != null) {
-			return t("text", tag, code, code, CmsContextHolder.getInstance().getCurrentLocale(), args);
+			return t("text", tag, code, code, context.getCurrentLocale(), args);
 		} else {
 			return null;
 		}
@@ -76,7 +84,7 @@ public class Helper {
 
 	public String tu(String tag, String code, Object... args) {
 		if (code != null) {
-			return t("url", tag, code, code, CmsContextHolder.getInstance().getCurrentLocale(), args);
+			return t("url", tag, code, code, context.getCurrentLocale(), args);
 		} else {
 			return null;
 		}
@@ -84,7 +92,7 @@ public class Helper {
 
 	public String t(String type, String tag, String code, Object... args) {
 		if (code != null) {
-			return t(type, tag, code, code, CmsContextHolder.getInstance().getCurrentLocale(), args);
+			return t(type, tag, code, code, context.getCurrentLocale(), args);
 		} else {
 			return null;
 		}
@@ -100,22 +108,22 @@ public class Helper {
 		}
 	}
 
-	public static String f(String pattern, Object... args) {
-		return String.format(CmsContextHolder.getInstance().getCurrentLocale(), pattern, args);
+	public String f(String pattern, Object... args) {
+		return String.format(context.getCurrentLocale(), pattern, args);
 	}
 
-	public static String f(Date date, String pattern) {
+	public String f(Date date, String pattern) {
 		try {
-			SimpleDateFormat sdf = new SimpleDateFormat(pattern, CmsContextHolder.getInstance().getCurrentLocale());
+			SimpleDateFormat sdf = new SimpleDateFormat(pattern, context.getCurrentLocale());
 			return sdf.format(date);
 		} catch (Exception e) {
 			return "";
 		}
 	}
 
-	public static String f(LocalDateTime dateTime, String pattern) {
+	public String f(LocalDateTime dateTime, String pattern) {
 		try {
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern, CmsContextHolder.getInstance().getCurrentLocale());
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern, context.getCurrentLocale());
 			return dateTime.format(formatter);
 		} catch (Exception e) {
 			return "";
@@ -123,14 +131,14 @@ public class Helper {
 	}
 
 	public String pageUrl(String pageId) {
-		String uri = urlService.getPageUrl(pageId, CmsContextHolder.getInstance().getAppCode(), CmsContextHolder.getInstance().getCurrentLocale().getLanguage());
+		String uri = urlService.getPageUrl(pageId, context.getAppCode(), context.getCurrentLocale().getLanguage());
 		if (uri == null)
 			uri = "/";
 		return url(uri);
 	}
 
 	public String pageUri(String pageId) {
-		String uri = urlService.getPageUrl(pageId, CmsContextHolder.getInstance().getAppCode(), CmsContextHolder.getInstance().getCurrentLocale().getLanguage());
+		String uri = urlService.getPageUrl(pageId, context.getAppCode(), context.getCurrentLocale().getLanguage());
 		if (uri == null)
 			uri = "/";
 		return uri;
@@ -140,12 +148,12 @@ public class Helper {
 		return Base64.encodeBase64URLSafeString(in.getBytes());
 	}
 
-	private static String uri(String key) {
-		String encodedUrl = CmsContextHolder.getInstance().getHttpServletResponse().encodeURL(key);
-		return new StringBuilder(CmsContextHolder.getInstance().getHttpServletRequest().getContextPath()).append(encodedUrl).toString();
+	private String uri(String key) {
+		String encodedUrl = context.getHttpServletResponse().encodeURL(key);
+		return new StringBuilder(context.getHttpServletRequest().getContextPath()).append(encodedUrl).toString();
 	}
 
-	private static String url(String protocol, String host, Integer port, String key) {
+	private String url(String protocol, String host, Integer port, String key) {
 		if (port == 80 || port == 443) {
 			return new StringBuilder(protocol).append("://").append(host).append(uri(key)).toString();
 		} else {
@@ -153,24 +161,24 @@ public class Helper {
 		}
 	}
 
-	public static String url(String key) {
-		String protocol = (CmsContextHolder.getInstance().getHttpServletRequest().isSecure()) ? "https" : "http";
+	public String url(String key) {
+		String protocol = (context.getHttpServletRequest().isSecure()) ? "https" : "http";
 		return url(protocol, key);
 	}
 
-	private static String url(String protocol, String key) {
-		String host = CmsContextHolder.getInstance().getHttpServletRequest().getServerName();
-		Integer port = ("http".equals(protocol)) ? CmsContextHolder.getInstance().getPort() : CmsContextHolder.getInstance().getSecurePort();
+	private String url(String protocol, String key) {
+		String host = context.getHttpServletRequest().getServerName();
+		Integer port = ("http".equals(protocol)) ? context.getPort() : context.getSecurePort();
 		return url(protocol, host, port, key);
 	}
 
-	public static String getRawUri() {
-		return CmsContextHolder.getInstance().getHttpServletRequest().getRequestURI();
+	public String getRawUri() {
+		return context.getHttpServletRequest().getRequestURI();
 	}
 
-	public static String getCurrentUrl() {
-		StringBuffer requestUrl = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest().getRequestURL();
-		String queryString = CmsContextHolder.getInstance().getHttpServletRequest().getQueryString();
+	public String getCurrentUrl() {
+		StringBuffer requestUrl = context.getHttpServletRequest().getRequestURL();
+		String queryString = context.getHttpServletRequest().getQueryString();
 		if (queryString != null && !queryString.isEmpty())
 			requestUrl.append("?").append(queryString);
 		return requestUrl.toString();
@@ -179,7 +187,7 @@ public class Helper {
 	public String render(String text) {
 		try {
 			StringWriter stringWriter = new StringWriter();
-			velocityEngine.evaluate(new VelocityContext(CmsContextHolder.getInstance().getModelMap()), stringWriter, "post_message_rendere", new StringReader(text));
+			velocityEngine.evaluate(new VelocityContext(context.getModelMap()), stringWriter, "post_message_rendere", new StringReader(text));
 			return stringWriter.toString();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -189,7 +197,7 @@ public class Helper {
 
 	public String t(String tag, String code, Map<String, Object> args) {
 		try {
-			String text = translationService.getMessage(tag, "text", code, null, code, CmsContextHolder.getInstance().getCurrentLocale());
+			String text = translationService.getMessage(tag, "text", code, null, code, context.getCurrentLocale());
 			StringWriter stringWriter = new StringWriter();
 			velocityEngine.evaluate(new VelocityContext(args), stringWriter, "post_message_rendere", new StringReader(text));
 			return stringWriter.toString();

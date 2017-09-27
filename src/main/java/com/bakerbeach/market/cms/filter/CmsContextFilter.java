@@ -13,10 +13,8 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.bakerbeach.market.cms.model.CmsContext;
 import com.bakerbeach.market.cms.service.CmsContextFactory;
 import com.bakerbeach.market.cms.service.CmsContextHolder;
-import com.bakerbeach.market.cms.service.UrlHelper;
 
 public class CmsContextFilter extends AbstractContextFilter {
 	private static final Logger log = LoggerFactory.getLogger(CmsContextFilter.class.getName());
@@ -32,21 +30,7 @@ public class CmsContextFilter extends AbstractContextFilter {
 			chain.doFilter(httpServletRequest, httpServletResponse);
 		} else {
 			try {
-				String host = UrlHelper.getHost(httpServletRequest);
-				String path = UrlHelper.getPathWithinApplication(httpServletRequest);
-
-				CmsContext cmsContext = CmsContextHolder.getInstance();
-				if (cmsContext == null) {
-					cmsContext = cmsContextFactory.newInstance(host, path);
-					cmsContext.setProtocol(UrlHelper.getProtocol(httpServletRequest));
-					CmsContextHolder.setInstance(cmsContext);
-				} else {
-					cmsContext.setHost(host);
-					cmsContext.setPath(path);
-					cmsContext.setProtocol(UrlHelper.getProtocol(httpServletRequest));
-					cmsContext.setPageId(null);
-				}
-				
+				CmsContextHolder.setInstance(cmsContextFactory.newInstance(httpServletRequest,httpServletResponse));
 				chain.doFilter(httpServletRequest, httpServletResponse);
 			} catch (Exception e) {
 				log.error(ExceptionUtils.getStackTrace(e));
