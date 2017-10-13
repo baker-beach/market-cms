@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import com.bakerbeach.market.cms.model.CmsContext;
+import com.bakerbeach.market.cms.model.RequestContext;
 import com.bakerbeach.market.translation.api.service.TranslationService;
 
 @Component
@@ -37,9 +37,9 @@ public class Helper {
 	@Autowired
 	protected TranslationService translationService;
 	
-	protected CmsContext context;
+	protected RequestContext context;
 	
-	public Helper(CmsContext context) {
+	public Helper(RequestContext context) {
 		this.context = context; 
 	}
 	

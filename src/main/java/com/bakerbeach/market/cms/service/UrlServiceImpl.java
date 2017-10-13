@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Value;
 
-import com.bakerbeach.market.cms.model.CmsContext;
+import com.bakerbeach.market.cms.model.RequestContext;
 import com.bakerbeach.market.cms.model.UrlMappingInfo;
 
 public class UrlServiceImpl implements UrlService {
@@ -59,7 +59,7 @@ public class UrlServiceImpl implements UrlService {
 	}
 
 	@Override
-	public UrlMappingInfo getRequestMapping(String url, Map<String, String[]> parameterMap, CmsContext cmsContext) {
+	public UrlMappingInfo getRequestMapping(String url, Map<String, String[]> parameterMap, RequestContext cmsContext) {
 		String shopId = cmsContext.getAppCode();
 		String language = cmsContext.getCurrentLocale().getLanguage();
 

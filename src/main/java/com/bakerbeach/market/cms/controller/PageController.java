@@ -6,7 +6,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -23,7 +22,7 @@ import com.bakerbeach.market.cms.box.Page;
 import com.bakerbeach.market.cms.box.ProcessableBox;
 import com.bakerbeach.market.cms.box.ProcessableBoxException;
 import com.bakerbeach.market.cms.box.RedirectException;
-import com.bakerbeach.market.cms.model.CmsContext;
+import com.bakerbeach.market.cms.model.RequestContext;
 import com.bakerbeach.market.cms.model.Redirect;
 import com.bakerbeach.market.cms.service.CmsContextHolder;
 import com.bakerbeach.market.cms.service.Helper;
@@ -43,7 +42,7 @@ public class PageController implements ApplicationContextAware{
 	@RequestMapping(value = "/**")
 	public String getPage(ModelMap map, HttpServletRequest request, HttpServletResponse response, RedirectAttributes redirectAttrs) {
 
-		CmsContext cmsContext = CmsContextHolder.getInstance();
+		RequestContext cmsContext = CmsContextHolder.getInstance();
 		map.put("cmsCtx", cmsContext);
 		
 		if(map.get("messages") == null && request.getSession().getAttribute("messages") != null){
@@ -94,7 +93,7 @@ public class PageController implements ApplicationContextAware{
 			doRenderRequest(page.getRootBox(), request, response, map);
 			return page.getRootBox().getTemplate();
 		}catch (Exception e) {
-			log.error(ExceptionUtils.getMessage(e));
+			log.error("error for path: " + cmsContext.getPath());
 			map.clear();
 			return "redirect:" + helper.pageUrl("exception");
 		}

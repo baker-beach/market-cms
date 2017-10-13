@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.ui.ModelMap;
 import com.bakerbeach.market.cms.service.Helper;
 
-public class CmsContextImpl implements CmsContext {
+public class CmsContextImpl implements RequestContext {
 	
 	private String helperClass = Helper.class.getName();
 	private String appCode;
@@ -31,7 +31,7 @@ public class CmsContextImpl implements CmsContext {
 	private Map<String,Object> requestData = new HashMap<String,Object>();
 	
 	
-	public CmsContextImpl(CmsContext cmsContext){
+	public CmsContextImpl(RequestContext cmsContext){
 		setAppCode(cmsContext.getAppCode());
 		setPort(cmsContext.getPort());
 		setSecurePort(cmsContext.getSecurePort());
@@ -119,7 +119,7 @@ public class CmsContextImpl implements CmsContext {
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public CmsContext refine(UrlMappingInfo urlMappingInfo) {
+	public RequestContext refine(UrlMappingInfo urlMappingInfo) {
 		if (urlMappingInfo != null) {
 			String pageId = (String) urlMappingInfo.get("page_id");
 			setPageId(pageId);

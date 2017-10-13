@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.ui.ModelMap;
 
 @SuppressWarnings("unused")
-public interface CmsContext {
+public interface RequestContext {
 	
 	String getAppCode();
 	
@@ -45,7 +45,7 @@ public interface CmsContext {
 	
 	ModelMap getModelMap();
 	
-	CmsContext refine(UrlMappingInfo urlMappingInfo);
+	RequestContext refine(UrlMappingInfo urlMappingInfo);
 
 	Map<String, Object> getRequestData();
 

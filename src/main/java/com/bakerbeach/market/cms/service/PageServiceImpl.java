@@ -18,7 +18,7 @@ import com.bakerbeach.market.cms.box.Page;
 import com.bakerbeach.market.cms.box.PageImpl;
 import com.bakerbeach.market.cms.box.SimpleBox;
 import com.bakerbeach.market.cms.model.BoxTemplate;
-import com.bakerbeach.market.cms.model.CmsContext;
+import com.bakerbeach.market.cms.model.RequestContext;
 import com.bakerbeach.market.cms.model.Content;
 import com.bakerbeach.market.cms.model.Structure;
 import com.bakerbeach.market.commons.CopyHelper;
@@ -40,7 +40,7 @@ public class PageServiceImpl implements PageService, ApplicationContextAware {
 	private Integer cacheTime;
 	
 	@Override
-	public Page getPage(CmsContext cmsContext) throws PageServiceException {
+	public Page getPage(RequestContext cmsContext) throws PageServiceException {
 		try {
 			Structure structure = getStructure(cmsContext.getPageId());
 			return decodePage(structure);

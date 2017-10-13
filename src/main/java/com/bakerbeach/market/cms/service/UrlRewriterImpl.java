@@ -17,7 +17,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
-import com.bakerbeach.market.cms.model.CmsContext;
+import com.bakerbeach.market.cms.model.RequestContext;
 import com.bakerbeach.market.cms.model.UrlMappingInfo;
 
 public class UrlRewriterImpl implements UrlRewriter {
@@ -40,7 +40,7 @@ public class UrlRewriterImpl implements UrlRewriter {
 	@SuppressWarnings("unchecked")
 	public boolean processRequest(final HttpServletRequest request, final HttpServletResponse response,
 			FilterChain parentChain, String originalUri) throws IOException, ServletException {
-		CmsContext cmsCtx = CmsContextHolder.getInstance();
+		RequestContext cmsCtx = CmsContextHolder.getInstance();
 
 		UrlMappingInfo mapping = getRequestMapping(originalUri, (Map<String, String[]>) request.getParameterMap(),
 				cmsCtx);
@@ -85,7 +85,7 @@ public class UrlRewriterImpl implements UrlRewriter {
 		return false;
 	}
 
-	public UrlMappingInfo getRequestMapping(String url, Map<String, String[]> parameterMap, CmsContext cmsContext) {
+	public UrlMappingInfo getRequestMapping(String url, Map<String, String[]> parameterMap, RequestContext cmsContext) {
 		return urlService.getRequestMapping(url, parameterMap, cmsContext);
 	}
 
