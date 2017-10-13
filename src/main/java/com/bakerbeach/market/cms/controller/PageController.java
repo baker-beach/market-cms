@@ -6,7 +6,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -35,7 +34,7 @@ import com.bakerbeach.market.commons.MessagesImpl;
 @Controller
 public class PageController implements ApplicationContextAware{
 
-	private static final Logger log = LoggerFactory.getLogger(PageController.class.getName());
+	private static final Logger Logger = LoggerFactory.getLogger(PageController.class.getName());
 
 	@Autowired
 	private PageService pageService;
@@ -47,6 +46,7 @@ public class PageController implements ApplicationContextAware{
 		cmsContext.setHttpServletRequest(request);
 		cmsContext.setHttpServletResponse(response);
 		cmsContext.setModelMap(map);
+		map.put("cmsCtx", cmsContext);
 		
 		if(map.get("messages") == null && request.getSession().getAttribute("messages") != null){
 			Messages messages = (Messages)request.getSession().getAttribute("messages");
@@ -58,24 +58,16 @@ public class PageController implements ApplicationContextAware{
 			Messages messages = new MessagesImpl();
 			map.put("messages", messages);
 		}
-		
-
-		
-		map.put("cmsCtx", cmsContext);
-		
+			
 		Helper helper = null;
 	
 		try {
 			helper = (Helper) context.getBean(Class.forName(cmsContext.getHelperClass()));
-		} catch (BeansException | ClassNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			map.put("helper",helper);
+		} catch (BeansException | ClassNotFoundException e) {
+			Logger.error("error creating Helper instance for class " + cmsContext.getHelperClass());
 		}
-
-		map.put("helper",helper);
-		
-
-		
+	
 		try {
 			Page page = null;
 			try{
@@ -84,7 +76,7 @@ public class PageController implements ApplicationContextAware{
 				cmsContext.setPageId(cmsContext.getDefaultPageId());
 				page = pageService.getPage(cmsContext);
 			}
-				
+		
 			Redirect redirect = doActionRequest(page.getRootBox(), request, response, map);
 			if (redirect != null) {
 				map.clear();
@@ -102,7 +94,7 @@ public class PageController implements ApplicationContextAware{
 			doRenderRequest(page.getRootBox(), request, response, map);
 			return page.getRootBox().getTemplate();
 		}catch (Exception e) {
-			log.error(ExceptionUtils.getMessage(e));
+			Logger.error("exception while rendering " + cmsContext.getPath());
 			map.clear();
 			return "redirect:" + helper.pageUrl("exception");
 		}
