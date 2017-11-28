@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
 import com.bakerbeach.market.cms.model.BoxTemplate;
-import com.bakerbeach.market.cms.model.Content;
 import com.bakerbeach.market.cms.model.Structure;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
@@ -17,7 +16,6 @@ public class PageDaoImpl implements PageDao {
 	private MongoTemplate mongoTemplate;
 	private String structureCollection;
 	private String boxCollection;
-	private String contentCollection;
 	
 	@Override
 	@SuppressWarnings("unchecked")
@@ -44,24 +42,6 @@ public class PageDaoImpl implements PageDao {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public Content findContentById(String contentId) throws CmsDaoException {
-		try {
-			QueryBuilder qb = new QueryBuilder();
-			qb.and("content_id").is(contentId);
-			DBObject dbo = getContentCollection().findOne(qb.get());
-			if (dbo != null) {
-				return new Content(dbo.toMap());
-			} else {
-				log.error("content with ID" + contentId + " not founf");
-				return new Content(null);
-			}
-		} catch (Exception e) {
-			throw new CmsDaoException("error while loading content with ID " + contentId);
-		}
-	}
-
 	public void setStructureCollection(String structureCollection) {
 		this.structureCollection = structureCollection;
 	}
@@ -76,14 +56,6 @@ public class PageDaoImpl implements PageDao {
 
 	public void setBoxCollection(String boxCollection) {
 		this.boxCollection = boxCollection;
-	}
-
-	private DBCollection getContentCollection() {
-		return mongoTemplate.getCollection(contentCollection);
-	}
-
-	public void setContentCollection(String contentCollection) {
-		this.contentCollection = contentCollection;
 	}
 
 	public void setMongoTemplate(MongoTemplate mongoTemplate) {

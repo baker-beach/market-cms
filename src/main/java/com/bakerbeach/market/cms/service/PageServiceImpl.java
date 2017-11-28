@@ -19,7 +19,6 @@ import com.bakerbeach.market.cms.box.PageImpl;
 import com.bakerbeach.market.cms.box.SimpleBox;
 import com.bakerbeach.market.cms.model.BoxTemplate;
 import com.bakerbeach.market.cms.model.CmsContext;
-import com.bakerbeach.market.cms.model.Content;
 import com.bakerbeach.market.cms.model.Structure;
 import com.bakerbeach.market.commons.CopyHelper;
 
@@ -32,7 +31,6 @@ public class PageServiceImpl implements PageService, ApplicationContextAware {
 	
 	private Map<String, Structure> structureCache = new HashMap<String, Structure>();
 	private Map<String, BoxTemplate> boxTemplateCache = new HashMap<String, BoxTemplate>();
-	private Map<String, Content> contentCache = new HashMap<String, Content>();
 	
 	private ApplicationContext context;
 
@@ -70,13 +68,6 @@ public class PageServiceImpl implements PageService, ApplicationContextAware {
 			}
 			if (structure.containsKey("data")) {
 				box.getData().putAll((Map) structure.get("data"));
-			}
-			if (structure.containsKey("content_id")) {
-				box.setContentId((String) structure.get("content_id"));
-				Content content = getContent((String) structure.get("content_id"));
-				if (content != null && content.get() != null) {
-					box.getData().putAll(content.get());					
-				}
 			}
 			if (parentBox != null)
 				parentBox.addChildBox(containerId, box);
@@ -130,22 +121,6 @@ public class PageServiceImpl implements PageService, ApplicationContextAware {
 		boxTemplateCache.put(type, template);
 		return decodeBox(template);
 	}
-
-	private Content getContent(String contentId) throws CmsDaoException {
-		log.debug("content_id: " + contentId);
-		
-		Content content = contentCache.get(contentId);
-		if (content != null) {
-			if (content.getLastUpdate().getTime() > (new Date()).getTime() - cacheTime) {
-				return content;
-			}
-		}
-		
-		content = pageDao.findContentById(contentId);
-		contentCache.put(contentId, content);
-		return content;
-	}
-
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private Box decodeBox(BoxTemplate boxDescription) throws CmsDaoException {
@@ -179,7 +154,6 @@ public class PageServiceImpl implements PageService, ApplicationContextAware {
 	public void clearCache() {
 		structureCache.clear();
 		boxTemplateCache.clear();
-		contentCache.clear();
 	}
 
 	public PageDao getPageDao() {
