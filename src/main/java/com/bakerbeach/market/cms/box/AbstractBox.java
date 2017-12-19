@@ -1,6 +1,9 @@
 package com.bakerbeach.market.cms.box;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +37,11 @@ public abstract class AbstractBox extends HashMap<String, Object> implements Box
 	public static final String META_DATA_KEY = "metadata";
 	public static final String CONTENT_KEY = "content";
 
+	protected Date startDate;
+	protected Date endDate;
+
+	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+
 	protected String id;
 	protected Map<String, List<Box>> childBoxesByContainer = new HashMap<>();
 	{
@@ -57,9 +65,12 @@ public abstract class AbstractBox extends HashMap<String, Object> implements Box
 	}
 
 	public String getTemplate() {
-		if (getData().containsKey(TEMPLATE_KEY))
-			return (String) getData().get(TEMPLATE_KEY);
-		return (String) get(TEMPLATE_KEY);
+		if (this.isActive()) {
+			if (getData().containsKey(TEMPLATE_KEY))
+				return (String) getData().get(TEMPLATE_KEY);
+			return (String) get(TEMPLATE_KEY);
+		} else
+			return "/empty";
 	}
 
 	public void setTemplate(String template) {
@@ -126,27 +137,54 @@ public abstract class AbstractBox extends HashMap<String, Object> implements Box
 		return result;
 	}
 
-	@Override
-	public void setContentId(String contentId) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public String getContentId() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	public void getFieldErrors(BindingResult result, Messages messages) {
 		for (ObjectError tempError : result.getAllErrors()) {
 			if (tempError instanceof FieldError) {
 				String name = ((FieldError) tempError).getField();
 				if (messages.getFieldError(name) == null) {
-					messages.addFieldError(new FieldMessageImpl(name, Message.TYPE_ERROR, tempError.getDefaultMessage(),
-							tempError.getArguments()));
+					messages.addFieldError(new FieldMessageImpl(name, Message.TYPE_ERROR, tempError.getDefaultMessage(), tempError.getArguments()));
 				}
 			}
 		}
+	}
+
+	public Date getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+
+	public void setStartDate(String date) {
+		try {
+			this.startDate = simpleDateFormat.parse(date);
+		} catch (ParseException e) {
+		}
+	}
+
+	public Date getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
+	}
+
+	public void setEndDate(String date) {
+		try {
+			this.endDate = simpleDateFormat.parse(date);
+		} catch (ParseException e) {
+		}
+	}
+
+	public boolean isActive() {
+		Date now = new Date();
+		if (startDate != null && now.before(startDate))
+			return false;
+		if (endDate != null && now.after(endDate))
+			return false;
+		return true;
 	}
 
 }

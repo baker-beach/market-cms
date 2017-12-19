@@ -66,6 +66,12 @@ public class PageServiceImpl implements PageService, ApplicationContextAware {
 			if (structure.containsKey("box_id")) {
 				box.setId((String) structure.get("box_id"));
 			}
+			if (structure.containsKey("start_date")) {
+				box.setStartDate((String) structure.get("start_date"));
+			}
+			if (structure.containsKey("end_date")) {
+				box.setEndDate((String) structure.get("end_date"));
+			}
 			if (structure.containsKey("data")) {
 				box.getData().putAll((Map) structure.get("data"));
 			}

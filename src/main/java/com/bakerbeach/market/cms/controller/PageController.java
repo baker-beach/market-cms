@@ -32,7 +32,7 @@ import com.bakerbeach.market.commons.Messages;
 import com.bakerbeach.market.commons.MessagesImpl;
 
 @Controller
-public class PageController implements ApplicationContextAware{
+public class PageController implements ApplicationContextAware {
 
 	private static final Logger Logger = LoggerFactory.getLogger(PageController.class.getName());
 
@@ -47,36 +47,36 @@ public class PageController implements ApplicationContextAware{
 		cmsContext.setHttpServletResponse(response);
 		cmsContext.setModelMap(map);
 		map.put("cmsCtx", cmsContext);
-		
-		if(map.get("messages") == null && request.getSession().getAttribute("messages") != null){
-			Messages messages = (Messages)request.getSession().getAttribute("messages");
+
+		if (map.get("messages") == null && request.getSession().getAttribute("messages") != null) {
+			Messages messages = (Messages) request.getSession().getAttribute("messages");
 			map.put("messages", messages);
-			request.getSession().setAttribute("messages",null);
+			request.getSession().setAttribute("messages", null);
 		}
-		
-		if(map.get("messages") == null){
+
+		if (map.get("messages") == null) {
 			Messages messages = new MessagesImpl();
 			map.put("messages", messages);
 		}
-			
+
 		Helper helper = null;
-	
+
 		try {
 			helper = (Helper) context.getBean(Class.forName(cmsContext.getHelperClass()));
-			map.put("helper",helper);
+			map.put("helper", helper);
 		} catch (BeansException | ClassNotFoundException e) {
 			Logger.error("error creating Helper instance for class " + cmsContext.getHelperClass());
 		}
-	
+
 		try {
 			Page page = null;
-			try{
+			try {
 				page = pageService.getPage(cmsContext);
-			}catch(PageNotFoundException pnfe){
+			} catch (PageNotFoundException pnfe) {
 				cmsContext.setPageId(cmsContext.getDefaultPageId());
 				page = pageService.getPage(cmsContext);
 			}
-		
+
 			Redirect redirect = doActionRequest(page.getRootBox(), request, response, map);
 			if (redirect != null) {
 				map.clear();
@@ -93,7 +93,7 @@ public class PageController implements ApplicationContextAware{
 
 			doRenderRequest(page.getRootBox(), request, response, map);
 			return page.getRootBox().getTemplate();
-		}catch (Exception e) {
+		} catch (Exception e) {
 			Logger.error("exception while rendering " + cmsContext.getPath());
 			map.clear();
 			return "redirect:" + helper.pageUrl("exception");
@@ -101,56 +101,55 @@ public class PageController implements ApplicationContextAware{
 
 	}
 
-	protected void doRenderRequest(Box box, HttpServletRequest request, HttpServletResponse response,
-			ModelMap modelMap) {
+	protected void doRenderRequest(Box box, HttpServletRequest request, HttpServletResponse response, ModelMap modelMap) {
 		modelMap.put("page", box);
 		modelMap.put("self", box);
 		doTreeRenderRequest(box, request, response, modelMap);
 	}
 
-	protected Redirect doActionRequest(Box box, HttpServletRequest request, HttpServletResponse response,
-			ModelMap modelMap) {
-		if (box instanceof ProcessableBox) {
-			try {
-				((ProcessableBox) box).handleActionRequest(request, response, modelMap);
-			} catch (RedirectException e) {
-				return e.getRedirect();
-			} catch (ProcessableBoxException e) {
-				return new Redirect(CmsContextHolder.getInstance().getDefaultPageId(),"");
+	protected Redirect doActionRequest(Box box, HttpServletRequest request, HttpServletResponse response, ModelMap modelMap) {
+		if (box.isActive()) {
+			if (box instanceof ProcessableBox) {
+				try {
+					((ProcessableBox) box).handleActionRequest(request, response, modelMap);
+				} catch (RedirectException e) {
+					return e.getRedirect();
+				} catch (ProcessableBoxException e) {
+					return new Redirect(CmsContextHolder.getInstance().getDefaultPageId(), "");
+				}
 			}
-		}
 
-		for (Map.Entry<String, List<Box>> entry : box.getContainerMap().entrySet()) {
-			for (Box b : entry.getValue()) {
-				Redirect redirect = doActionRequest(b, request, response, modelMap);
-				if (redirect != null)
-					return redirect;
+			for (Map.Entry<String, List<Box>> entry : box.getContainerMap().entrySet()) {
+				for (Box b : entry.getValue()) {
+					Redirect redirect = doActionRequest(b, request, response, modelMap);
+					if (redirect != null)
+						return redirect;
+				}
 			}
 		}
 		return null;
 	}
 
-	private void doTreeRenderRequest(Box box, HttpServletRequest request, HttpServletResponse response,
-			ModelMap modelMap) {
-		box.handleRenderRequest(request, response, modelMap);
+	private void doTreeRenderRequest(Box box, HttpServletRequest request, HttpServletResponse response, ModelMap modelMap) {
+		if (box.isActive()) {
+			box.handleRenderRequest(request, response, modelMap);
 
-		for (Map.Entry<String, List<Box>> entry : box.getContainerMap().entrySet()) {
-			for (Box b : entry.getValue())
-				doTreeRenderRequest(b, request, response, modelMap);
+			for (Map.Entry<String, List<Box>> entry : box.getContainerMap().entrySet()) {
+				for (Box b : entry.getValue())
+					doTreeRenderRequest(b, request, response, modelMap);
+			}
 		}
 	}
-	
-    private static ApplicationContext context;
 
-    public static ApplicationContext getApplicationContext() {
-        return context;
-    }
+	private static ApplicationContext context;
 
-    @Override
-    public void setApplicationContext(ApplicationContext ac)
-            throws BeansException {
-        context = ac;
-    }
+	public static ApplicationContext getApplicationContext() {
+		return context;
+	}
 
+	@Override
+	public void setApplicationContext(ApplicationContext ac) throws BeansException {
+		context = ac;
+	}
 
 }

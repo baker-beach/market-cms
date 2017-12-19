@@ -1,5 +1,6 @@
 package com.bakerbeach.market.cms.box;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -36,8 +37,18 @@ public interface Box {
 
 	void handleRenderRequest(HttpServletRequest request, HttpServletResponse response, ModelMap modelMap);
 	
-	void setContentId(String contentId);
+	Date getStartDate();
 	
-	String getContentId();
+	void setStartDate(Date date);
+	
+	void setStartDate(String date);
+	
+	Date getEndDate();
+	
+	void setEndDate(Date date);	
+	
+	void setEndDate(String date);	
+	
+	boolean isActive();
 
 }
