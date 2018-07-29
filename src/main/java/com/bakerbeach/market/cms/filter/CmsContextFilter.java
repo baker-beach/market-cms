@@ -19,44 +19,45 @@ import com.bakerbeach.market.cms.service.CmsContextHolder;
 import com.bakerbeach.market.cms.service.UrlHelper;
 
 public class CmsContextFilter extends AbstractContextFilter {
-	private static final Logger log = LoggerFactory.getLogger(CmsContextFilter.class.getName());
+    private static final Logger log = LoggerFactory.getLogger(CmsContextFilter.class.getName());
 
-	private CmsContextFactory cmsContextFactory;
+    private CmsContextFactory cmsContextFactory;
 
-	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 
-		final HttpServletRequest httpServletRequest = (HttpServletRequest) request;
-		final HttpServletResponse httpServletResponse = (HttpServletResponse) response;
+        final HttpServletRequest httpServletRequest = (HttpServletRequest) request;
+        final HttpServletResponse httpServletResponse = (HttpServletResponse) response;
 
-		if (skipFilter(httpServletRequest)) {
-			chain.doFilter(httpServletRequest, httpServletResponse);
-		} else {
-			try {
-				String host = UrlHelper.getHost(httpServletRequest);
-				String path = UrlHelper.getPathWithinApplication(httpServletRequest);
+        if (skipFilter(httpServletRequest)) {
+            chain.doFilter(httpServletRequest, httpServletResponse);
+        } else {
+            try {
+                String host = UrlHelper.getHost(httpServletRequest);
+                String path = UrlHelper.getPathWithinApplication(httpServletRequest);
 
-				CmsContext cmsContext = CmsContextHolder.getInstance();
-				if (cmsContext == null) {
-					cmsContext = cmsContextFactory.newInstance(host, path);
-					cmsContext.setProtocol(UrlHelper.getProtocol(httpServletRequest));
-					CmsContextHolder.setInstance(cmsContext);
-				} else {
-					cmsContext.setHost(host);
-					cmsContext.setPath(path);
-					cmsContext.setProtocol(UrlHelper.getProtocol(httpServletRequest));
-					cmsContext.setPageId(null);
-				}
-				
-				chain.doFilter(httpServletRequest, httpServletResponse);
-			} catch (Exception e) {
-				log.error(ExceptionUtils.getStackTrace(e));
-				throw new ServletException(e);
-			}
-		}
-	}
+                CmsContext cmsContext = CmsContextHolder.getInstance();
+                if (cmsContext == null) {
+                    cmsContext = cmsContextFactory.newInstance(host, path);
+                    cmsContext.setProtocol(UrlHelper.getProtocol(httpServletRequest));
+                    CmsContextHolder.setInstance(cmsContext);
+                } else {
+                    cmsContext.setHost(host);
+                    cmsContext.setPath(path);
+                    cmsContext.setProtocol(UrlHelper.getProtocol(httpServletRequest));
+                    cmsContext.setPageId(null);
+                }
 
-	public void setShopContextFactory(CmsContextFactory cmsContextFactory) {
-		this.cmsContextFactory = cmsContextFactory;
-	}
+                chain.doFilter(httpServletRequest, httpServletResponse);
+            } catch (Exception e) {
+                log.error(ExceptionUtils.getStackTrace(e));
+                throw new ServletException(e);
+            }
+        }
+    }
+
+    public void setCmsContextFactory(CmsContextFactory cmsContextFactory) {
+        this.cmsContextFactory = cmsContextFactory;
+    }
 
 }
